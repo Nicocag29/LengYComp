@@ -1,0 +1,10 @@
+# Artefactos de LaTeX
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.toc
+*.synctex.gz
+
+# El PDF se deja versionado a propósito (para verlo en GitHub)

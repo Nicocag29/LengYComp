@@ -1,0 +1,40 @@
+% preamble.tex — paquetes y macros de notación
+% Apunte LyC (Reynolds, Theories of Programming Languages, 2009)
+
+% --- Idioma y codificación (necesarios para acentos del texto en español) ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+
+% --- Matemática ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{stmaryrd}   % \llbracket \rrbracket para la semántica
+
+% --- Árboles ---
+\usepackage{bussproofs} % árboles de derivación
+\usepackage{forest}     % árboles de sintaxis
+
+% --- Enlaces ---
+\usepackage{hyperref}
+\hypersetup{
+  plainpages=false,   % evita destinos PDF duplicados (page.1)
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  citecolor=blue!50!black,
+  urlcolor=blue!50!black,
+}
+
+% --- Entornos de teoremas (en español) ---
+\theoremstyle{plain}
+\newtheorem{theorem}{Teorema}[chapter]
+\newtheorem{proposition}[theorem]{Proposición}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definición}
+\newtheorem{example}[theorem]{Ejemplo}
+
+% --- Notación ---
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
