@@ -3,3 +3,106 @@
 % Cap. 2 de Reynolds — §2.3–2.4 (dominios y menor punto fijo) + lenguaje imperativo
 % TODO: 1) Motivación 2) Definiciones 3) Teoremas/props 4) Ecuaciones semánticas
 %       5) Ejemplos resueltos 6) Conexiones y trampas
+
+\section{El lenguaje imperativo simple (Reynolds §2.1--2.2)}
+
+\subsection*{Motivación}
+Queremos darle un \emph{significado} matemático preciso a un lenguaje
+imperativo. Las cuatro primeras construcciones salen directo; el \texttt{while}
+es el que obliga a inventar toda la maquinaria de dominios y punto fijo
+(§2.3--2.4). Este capítulo deja planteado ese problema.
+
+\subsection*{Sintaxis}
+\[
+\begin{array}{rcl}
+\langle\mathit{intexp}\rangle &::=& 0 \mid 1 \mid 2 \mid \cdots \mid \langle\mathit{var}\rangle
+   \mid -\langle\mathit{intexp}\rangle \mid \langle\mathit{intexp}\rangle + \langle\mathit{intexp}\rangle
+   \mid \cdots \mid \langle\mathit{intexp}\rangle \mathbin{\mathbf{rem}} \langle\mathit{intexp}\rangle \\[2pt]
+\langle\mathit{boolexp}\rangle &::=& \mathbf{true} \mid \mathbf{false}
+   \mid \langle\mathit{intexp}\rangle = \langle\mathit{intexp}\rangle
+   \mid \langle\mathit{intexp}\rangle < \langle\mathit{intexp}\rangle \mid \cdots
+   \mid \neg\langle\mathit{boolexp}\rangle
+   \mid \langle\mathit{boolexp}\rangle \wedge \langle\mathit{boolexp}\rangle \mid \cdots \\[2pt]
+\langle\mathit{comm}\rangle &::=& \langle\mathit{var}\rangle := \langle\mathit{intexp}\rangle
+   \mid \mathbf{skip}
+   \mid \langle\mathit{comm}\rangle\,;\,\langle\mathit{comm}\rangle \\
+&& \mid\ \mathbf{if}\ \langle\mathit{boolexp}\rangle\ \mathbf{then}\ \langle\mathit{comm}\rangle\ \mathbf{else}\ \langle\mathit{comm}\rangle
+   \mid \mathbf{while}\ \langle\mathit{boolexp}\rangle\ \mathbf{do}\ \langle\mathit{comm}\rangle
+\end{array}
+\]
+Todas las variables son enteras (no hay variables booleanas).
+
+\subsection*{Estados}
+\begin{definition}[Estado y actualización]
+Un \emph{estado} $\sigma \in \Sigma$ asigna a cada variable un entero.
+La \emph{actualización} $[\sigma \mid v\colon n]$ es el estado igual a $\sigma$
+salvo que manda $v \mapsto n$:
+\[
+[\sigma \mid v\colon n]\,(w) =
+\begin{cases} n & \text{si } w = v \\ \sigma(w) & \text{si } w \neq v. \end{cases}
+\]
+\end{definition}
+
+\subsection*{Semántica de expresiones}
+\[
+\semi{\cdot} : \langle\mathit{intexp}\rangle \to (\Sigma \to \mathbb{Z}),
+\qquad
+\semb{\cdot} : \langle\mathit{boolexp}\rangle \to (\Sigma \to \mathbb{B}).
+\]
+\textbf{Hecho clave:} las expresiones \emph{siempre terminan} (sin error).
+
+\subsection*{Semántica de comandos}
+Un comando puede no terminar. Introducimos $\bot$ (\emph{bottom}) para la
+no-terminación y $\Sigma_\bot = \Sigma \cup \{\bot\}$. Entonces
+\[
+\semc{\cdot} : \langle\mathit{comm}\rangle \to (\Sigma \to \Sigma_\bot).
+\]
+\begin{definition}[Extensión estricta]
+Si $f : \Sigma \to \Sigma_\bot$, su extensión estricta $f_\bot : \Sigma_\bot \to \Sigma_\bot$ es
+\(
+f_\bot(\sigma) = \bot \text{ si } \sigma = \bot, \text{ y } f(\sigma) \text{ si no.}
+\)
+\end{definition}
+Ecuaciones semánticas (dirigidas por la sintaxis):
+\begin{align*}
+\semc{v := e}\,\sigma &= [\sigma \mid v\colon \semi{e}\,\sigma] \\
+\semc{\mathbf{skip}}\,\sigma &= \sigma \\
+\semc{c_0\,;\,c_1}\,\sigma &= (\semc{c_1})_\bot\,(\semc{c_0}\,\sigma) \\
+\semc{\mathbf{if}\ b\ \mathbf{then}\ c_0\ \mathbf{else}\ c_1}\,\sigma
+   &= \mathbf{if}\ \semb{b}\,\sigma\ \mathbf{then}\ \semc{c_0}\,\sigma\ \mathbf{else}\ \semc{c_1}\,\sigma
+\end{align*}
+
+\subsection*{Ejemplo resuelto}
+\[
+\begin{aligned}
+\semc{x := x-1\,;\,y := y+x}\,\sigma
+&= (\semc{y := y+x})_\bot\,(\semc{x := x-1}\,\sigma) \\
+&= (\semc{y := y+x})_\bot\,[\sigma \mid x\colon \sigma x - 1]
+   \qquad (\neq \bot,\text{ así que aplica } \semc{y:=y+x}) \\
+&= [\,[\sigma \mid x\colon \sigma x - 1] \mid y\colon \sigma y + (\sigma x - 1)\,] \\
+&= [\sigma \mid x\colon \sigma x - 1 \mid y\colon \sigma y + \sigma x - 1].
+\end{aligned}
+\]
+
+\subsection*{Conexiones y trampas}
+\textbf{El \texttt{while} no se puede definir así.} Desenrollando,
+$\mathbf{while}\ b\ \mathbf{do}\ c \equiv \mathbf{if}\ b\ \mathbf{then}\ (c\,;\,\mathbf{while}\ b\ \mathbf{do}\ c)\ \mathbf{else}\ \mathbf{skip}$,
+de donde sale la \emph{ecuación de desenrollado}
+\[
+\semc{\mathbf{while}\ b\ \mathbf{do}\ c}\,\sigma
+= \mathbf{if}\ \semb{b}\,\sigma\ \mathbf{then}\
+   (\semc{\mathbf{while}\ b\ \mathbf{do}\ c})_\bot(\semc{c}\,\sigma)\ \mathbf{else}\ \sigma.
+\tag{2.2}
+\]
+\emph{No es una ecuación semántica válida}: no está dirigida por la sintaxis
+(aparece $\mathbf{while}\ b\ \mathbf{do}\ c$ a la derecha). Es una \emph{condición},
+y puede tener cero, una o varias soluciones.
+\begin{itemize}
+  \item $\mathbf{while}\ x \neq 0\ \mathbf{do}\ x := x-2$: para $x$ impar o negativo
+        (no termina) la ecuación deja el resultado libre $\Rightarrow$ varias soluciones.
+  \item $\mathbf{while}\ \mathbf{true}\ \mathbf{do}\ \mathbf{skip}$: \emph{toda} función
+        $\Sigma \to \Sigma_\bot$ la satisface.
+\end{itemize}
+\textbf{Gancho a §2.3:} hace falta ordenar los significados por ``grado de
+definición'' ($\sqsubseteq$) y tomar el \emph{menor punto fijo} del funcional de
+desenrollado. Para eso: \emph{dominios y funciones continuas}.
