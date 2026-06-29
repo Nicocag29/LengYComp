@@ -1,0 +1,119 @@
+% ejercicios/cap2.tex  —  \input al final del Cap. 2 en main.tex
+\section*{Ejercicios resueltos (Parcial 2026)}
+\addcontentsline{toc}{section}{Ejercicios resueltos (Cap.~2)}
+
+\subsection*{Ejercicio 1 — Poset con inclusión invertida}
+\textbf{Consigna.} Sea $Q = (\mathcal{P}(\mathbb{N}), \supseteq)$, subconjuntos de $\mathbb{N}$
+ordenados por la inclusión al revés (por ejemplo $\{0,1,2\} \le \{1\}$ porque
+$\{0,1,2\} \supseteq \{1\}$).
+\begin{enumerate}
+  \item[(a)] ¿Hay cadenas interesantes en $Q$?
+  \item[(b)] ¿Es $Q$ un predominio? Justificar indicando el supremo de una cadena
+        arbitraria o dando una cadena que no tenga supremo.
+  \item[(c)] ¿Es $Q$ un dominio? Justificar.
+\end{enumerate}
+
+\noindent\textbf{Resolución.} En $Q$ el orden es $X \le_Q Y \iff X \supseteq Y$; es
+decir, ``menor en $Q$'' significa ``más grande como conjunto''. Una cadena
+$C_0 \le_Q C_1 \le_Q \cdots$ es una sucesión $C_0 \supseteq C_1 \supseteq \cdots$.
+
+\smallskip
+\noindent\emph{(a)} Sí. Tomamos $C_i = \{\, k \in \mathbb{N} : 2^i \mid k \,\}$. Entonces
+\[
+C_0 = \mathbb{N} \supsetneq C_1 = \{2k : k\in\mathbb{N}\} \supsetneq C_2 = \{4k : k\in\mathbb{N}\} \supsetneq \cdots,
+\]
+o sea $C_0 \le_Q C_1 \le_Q C_2 \le_Q \cdots$ con infinitos elementos distintos:
+es interesante.
+
+\smallskip
+\noindent\emph{(b)} Sí, es predominio. El supremo de una cadena arbitraria $\{C_i\}$ es
+\[
+\bigsqcup_i C_i = \bigcap_i C_i.
+\]
+En efecto: $\bigcap_i C_i \subseteq C_k$ para todo $k$, o sea $C_k \le_Q \bigcap_i C_i$,
+así que $\bigcap_i C_i$ es cota superior. Y si $S'$ es otra cota superior, entonces
+$S' \subseteq C_i$ para todo $i$, luego $S' \subseteq \bigcap_i C_i$, es decir
+$\bigcap_i C_i \le_Q S'$. Por lo tanto $\bigcap_i C_i$ es la menor cota superior, y
+pertenece a $\mathcal{P}(\mathbb{N})$.
+
+\smallskip
+\noindent\emph{(c)} Sí, es dominio, con $\bot_Q = \mathbb{N}$: para todo
+$C \in \mathcal{P}(\mathbb{N})$ vale $C \subseteq \mathbb{N}$, o sea $\mathbb{N} \le_Q C$.
+Así $\mathbb{N}$ es el elemento mínimo.
+
+\subsection*{Ejercicio 2 — Monotonía, continuidad y recursión como punto fijo}
+\textbf{Consigna.} Sea $\mathcal{P}(\mathbb{Z})$ con la inclusión usual $\subseteq$.
+\begin{enumerate}
+  \item[(a)] Sea $g(X) = X \cup \{x+1 : x \in X\}$. (1) ¿Es monótona? (2) ¿Es continua?
+  \item[(b)] Sea la recursión sobre $f : \mathbb{Z} \to \mathcal{P}(\mathbb{Z})$:
+        $f(0) = \{0\}$ y $f(x) = g(f(x-1))$ para $x \neq 0$.
+        (1) Proponer una solución. (2) Si $h$ cumple $4 \notin h(4)$, ¿es solución?
+        (3) ¿Se puede usar el teorema del menor punto fijo para hallar la menor solución?
+\end{enumerate}
+
+\noindent\textbf{Resolución.}
+
+\smallskip
+\noindent\emph{(a.1) Monótona.} Sean $X \subseteq Y$ y $z \in g(X)$. Si $z \in X \subseteq Y \subseteq g(Y)$.
+Si $z = y+1$ con $y \in X \subseteq Y$, entonces $z \in \{w+1 : w \in Y\} \subseteq g(Y)$.
+En ambos casos $z \in g(Y)$, luego $g(X) \subseteq g(Y)$.
+
+\smallskip
+\noindent\emph{(a.2) Continua.} Para una cadena $\{X_i\}$ su supremo es $\bigcup_i X_i$. Entonces
+\[
+\begin{aligned}
+g\!\left(\bigcup_i X_i\right)
+&= \Big(\bigcup_i X_i\Big) \cup \Big\{z+1 : z \in \bigcup_i X_i\Big\}
+ = \bigcup_i X_i \,\cup\, \bigcup_i \{z+1 : z \in X_i\} \\
+&= \bigcup_i \big( X_i \cup \{z+1 : z \in X_i\} \big)
+ = \bigcup_i g(X_i),
+\end{aligned}
+\]
+donde el segundo paso usa $z+1 \in \{w+1 : w \in \bigcup_i X_i\} \iff \exists i,\ z \in X_i$.
+Así $g$ preserva los supremos de cadenas: es continua.
+
+\smallskip
+\noindent\emph{(b.1) Una solución.}
+\[
+h(x) = \begin{cases} \emptyset & x < 0 \\ \{\,i \in \mathbb{N} : i \le x\,\} = \{0,1,\dots,x\} & x \ge 0. \end{cases}
+\]
+Verificación: $h(0) = \{0\}$. Para $x \ge 1$: $g(h(x-1)) = g(\{0,\dots,x-1\}) = \{0,\dots,x-1\}\cup\{1,\dots,x\} = \{0,\dots,x\} = h(x)$.
+Para $x < 0$: $h(x-1) = \emptyset$, y $g(\emptyset) = \emptyset = h(x)$. (Para $x<0$ la recursión
+no tiene caso base, así que el valor es libre; $h$ elige $\emptyset$, que es consistente.)
+
+\smallskip
+\noindent\emph{(b.2) No.} Para $x \ge 0$ la recursión fuerza el valor desenrollando hasta el caso base:
+\[
+f(4) = g(f(3)) = \cdots = g^4(f(0)) = g^4(\{0\}) = \{0,1,2,3,4\},
+\]
+ya que $g(\{0\})=\{0,1\}$, $g^2(\{0\})=\{0,1,2\}$, $g^3(\{0\})=\{0,1,2,3\}$, $g^4(\{0\})=\{0,1,2,3,4\}$.
+Luego $4 \in f(4)$ para \emph{toda} solución. Como $4 \notin h(4)$, $h$ no es solución.
+
+\smallskip
+\noindent\emph{(b.3) Sí.} Definimos el funcional
+\[
+F : (\mathbb{Z} \to \mathcal{P}(\mathbb{Z})) \to (\mathbb{Z} \to \mathcal{P}(\mathbb{Z})),
+\qquad
+F(f)(x) = \begin{cases} \{0\} & x = 0 \\ g(f(x-1)) & x \neq 0. \end{cases}
+\]
+Sus puntos fijos ($F(f) = f$) son exactamente las soluciones de la recursión.
+Como $\mathcal{P}(\mathbb{Z})$ con $\subseteq$ es un dominio (supremo $=$ unión, mínimo $\emptyset$),
+$\mathbb{Z} \to \mathcal{P}(\mathbb{Z})$ es un dominio (mínimo $\lambda x.\,\emptyset$).
+Además $F$ es continua:
+\begin{itemize}
+  \item \emph{Monótona:} si $f \sqsubseteq h$, para $x \neq 0$ es $F(f)(x) = g(f(x-1)) \subseteq g(h(x-1)) = F(h)(x)$ ($g$ monótona); para $x=0$, $\{0\}=\{0\}$.
+  \item \emph{Continua:} para una cadena $\{f_i\}$ y $x \neq 0$,
+    \[
+    \begin{aligned}
+    F\Big(\textstyle\bigsqcup_i f_i\Big)(x)
+    &= g\big((\textstyle\bigsqcup_i f_i)(x-1)\big)
+     = g\big(\textstyle\bigsqcup_i f_i(x-1)\big) \\
+    &= \textstyle\bigsqcup_i g(f_i(x-1))
+     = \textstyle\bigsqcup_i F(f_i)(x)
+    \end{aligned}
+    \]
+    ($g$ continua); para $x=0$, $\{0\} = \bigsqcup_i \{0\}$.
+\end{itemize}
+Por el teorema del menor punto fijo, $F$ tiene menor punto fijo
+$Y\,F = \bigsqcup_n F^n(\lambda x.\emptyset)$, que es la menor solución de la recursión
+(y coincide con la $h$ del inciso~1).
