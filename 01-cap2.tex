@@ -106,3 +106,170 @@ y puede tener cero, una o varias soluciones.
 \textbf{Gancho a §2.3:} hace falta ordenar los significados por ``grado de
 definición'' ($\sqsubseteq$) y tomar el \emph{menor punto fijo} del funcional de
 desenrollado. Para eso: \emph{dominios y funciones continuas}.
+
+\section{Dominios y funciones continuas (Reynolds §2.3)}
+
+\subsection*{Motivación}
+El \texttt{while} nos dejó la ecuación de desenrollado~(2.2): una \emph{condición}
+con posiblemente muchas soluciones. Necesitamos un criterio para elegir
+\emph{la} correcta --- la que no inventa información. La idea: ordenar los
+significados por ``grado de definición'' ($\sqsubseteq$) y quedarnos con el menor.
+Para que ese menor exista y se comporte bien, montamos la estructura de \emph{dominio}.
+
+\subsection*{Orden, cadenas y límites}
+\begin{definition}[Orden de aproximación]
+$x \sqsubseteq y$ se lee ``$x$ aproxima a $y$'', o ``$y$ tiene al menos tanta
+información como $x$''.
+\end{definition}
+
+\begin{definition}[Cadena, límite, cadena interesante]
+Una \emph{cadena} es una sucesión creciente, infinita y numerable
+$x_0 \sqsubseteq x_1 \sqsubseteq x_2 \sqsubseteq \cdots$ (la igualdad está permitida).
+Su \emph{límite} es su menor cota superior $\bigsqcup_i x_i$. Una cadena es
+\emph{interesante} si no contiene a su propio límite o, equivalentemente, si
+tiene infinitos elementos distintos.
+\end{definition}
+
+\noindent\textbf{Intuición.} $\sqsubseteq$ mide cuánta información tenés; una cadena
+es un proceso que \emph{gana} información; el límite es la información \emph{total};
+``interesante'' es el filtro de las cadenas que de verdad ponen a prueba la
+estructura (las aburridas, eventualmente constantes, contienen su límite trivialmente).
+
+\begin{example}[¿Cadena? ¿Interesante? ¿Límite?]
+\begin{center}
+\begin{tabular}{l c c c}
+\hline
+sucesión & ¿cadena? & ¿interesante? & límite \\
+\hline
+$0 \sqsubseteq 1 \sqsubseteq 2 \sqsubseteq \cdots$ en $\mathbb{N}\cup\{\infty\}$ & sí & sí & $\infty$ \\
+$5 \sqsubseteq 5 \sqsubseteq \cdots$ & sí & no & $5$ \\
+$\bot \sqsubseteq \bot \sqsubseteq 7 \sqsubseteq 7 \sqsubseteq \cdots$ en $\mathbb{Z}_\bot$ & sí & no & $7$ \\
+$\{1\} \sqsubseteq \{1,2\} \sqsubseteq \cdots$ (por $\subseteq$) & sí & sí & $\{1,2,3,\dots\}$ \\
+$3 \sqsupseteq 2 \sqsupseteq 1$ (decreciente) & no & --- & --- \\
+\hline
+\end{tabular}
+\end{center}
+\end{example}
+
+\subsection*{Predominios y dominios}
+\begin{definition}[Predominio y dominio]
+Un orden parcial $P$ es un \emph{predominio} si toda cadena de $P$ tiene su
+límite en $P$ (la condición solo muerde en las cadenas interesantes). Un
+\emph{dominio} es un predominio con elemento mínimo $\bot$, es decir
+$\bot \sqsubseteq x$ para todo $x$.
+\end{definition}
+
+\noindent\textbf{Las dos condiciones son independientes:} podés tener $\bot$ sin ser
+predominio, o ser predominio sin tener $\bot$. Conviene chequearlas por separado.
+
+\paragraph{Lifting y dominios planos.}
+El \emph{lifting} $P_\bot$ se forma agregándole a $P$ un mínimo $\bot$ nuevo, debajo
+de todo. Convierte cualquier predominio en dominio sin crear cadenas interesantes
+nuevas. Un \emph{dominio plano} es un conjunto $S$ ordenado discretamente
+($x \sqsubseteq y \iff x=y$) al que se le agrega $\bot$: por ejemplo
+$\mathbb{Z}_\bot = (\mathbb{Z}\text{ discreto}) + \bot$.
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+  \node (b) at (0,0) {$\bot$};
+  \node (m2) at (-3,1.6) {$-2$};
+  \node (m1) at (-1.5,1.6) {$-1$};
+  \node (z)  at (0,1.6) {$0$};
+  \node (p1) at (1.5,1.6) {$1$};
+  \node (p2) at (3,1.6) {$2$};
+  \node at (-4,1.6) {$\cdots$};
+  \node at (4,1.6) {$\cdots$};
+  \draw (b)--(m2); \draw (b)--(m1); \draw (b)--(z); \draw (b)--(p1); \draw (b)--(p2);
+\end{tikzpicture}
+\end{center}
+Dos niveles y nada en el medio: $\bot$ abajo, una fila chata de enteros
+incomparables arriba. La información es binaria (o $\bot$, o el valor completo), y
+por eso un dominio plano \textbf{no tiene cadenas interesantes}.
+
+\begin{example}[Zoológico]
+\textbf{Dominios:} $\mathbb{Z}_\bot$; $\mathbb{N}\cup\{\infty\}$ con $\le$ (el más
+simple \emph{con} cadenas interesantes); $[0,1]$ con $\le$.\\
+\textbf{Predominio pero NO dominio:} $\mathbb{Z}$ discreto (sin $\bot$);
+$(0,1]$ (no hay mínimo); $\{a,b\}$ discreto.\\
+\textbf{Ni siquiera predominio:} $(\mathbb{N},\le)$ (la cadena $0\sqsubseteq 1\sqsubseteq\cdots$
+no tiene cota superior, ¡aunque $\mathbb{N}$ sí tiene mínimo!);
+$\mathbb{Q}\cap[0,2]$ (la cadena $1.4 \sqsubseteq 1.41 \sqsubseteq \cdots$ apunta a $\sqrt 2 \notin \mathbb{Q}$).
+\end{example}
+
+\begin{example}[Los intervalos: un punto cambia todo]
+\begin{center}
+\begin{tabular}{l c c c c}
+\hline
+conjunto & borde abajo & borde arriba & ¿predominio? & ¿dominio? \\
+\hline
+$[0,1]$ & cerrado & cerrado & sí & sí (mín $0$) \\
+$(0,1]$ & abierto & cerrado & sí & no (sin mín) \\
+$(0,1)$ & abierto & abierto & no & no \\
+$[0,1)$ & cerrado & abierto & no & no (¡aunque hay mín $0$!) \\
+\hline
+\end{tabular}
+\end{center}
+El borde de \emph{arriba} decide predominio; el de \emph{abajo}, si hay mínimo.
+\end{example}
+
+\subsection*{Funciones monótonas y continuas}
+\begin{definition}[Monótona]
+$f : D \to D'$ es \emph{monótona} si $x \sqsubseteq y \Rightarrow f(x) \sqsubseteq f(y)$.
+\end{definition}
+\noindent\textbf{Intuición:} más información de entrada nunca produce menos información
+de salida. (Una $f$ monótona manda cadenas a cadenas.)
+
+\begin{definition}[Continua]
+$f : P \to P'$ es \emph{continua} si preserva los límites de las cadenas: para toda
+cadena $x_0 \sqsubseteq x_1 \sqsubseteq \cdots$,
+\[
+f\!\left(\bigsqcup_i x_i\right) = \bigsqcup_i f(x_i).
+\]
+\end{definition}
+\noindent\textbf{Intuición:} $f$ no da sorpresas en el límite --- está determinada por
+su comportamiento en las aproximaciones finitas. Lo que $f$ le hace al límite es el
+límite de lo que $f$ le hace a cada paso.
+
+\begin{proposition}[Continua $\Rightarrow$ monótona]
+Toda función continua es monótona.
+\end{proposition}
+\begin{proof}
+Sea $f$ continua y $x \sqsubseteq y$. Consideramos la cadena
+$x \sqsubseteq y \sqsubseteq y \sqsubseteq \cdots$, cuyo límite es $y$. Por continuidad,
+$f(y) = \bigsqcup\{f(x), f(y)\}$. Como un lub es, en particular, cota superior,
+$f(x) \sqsubseteq f(y)$.
+\end{proof}
+\noindent La vuelta es \textbf{falsa}: hay funciones monótonas no continuas.
+
+\begin{example}[Monótona pero no continua]
+En $D=\mathbb{N}\cup\{\infty\}$, sobre la cadena $0\sqsubseteq 1\sqsubseteq 2\sqsubseteq\cdots$
+(límite $\infty$):
+\begin{itemize}
+\item $g(x)=x+1$ (con $\infty+1=\infty$), de $D$ en $D$:
+  $g(\bigsqcup x_i)=g(\infty)=\infty$ y $\bigsqcup g(x_i)=\bigsqcup\{1,2,3,\dots\}=\infty$.
+  Iguales $\Rightarrow$ \textbf{continua} (acompaña al proceso).
+\item $f(x)=\top'$ si $x=\infty$, y $\bot'$ si $x$ es finito, de $D$ en
+  $\{\bot' \sqsubseteq \top'\}$: $f(\bigsqcup x_i)=f(\infty)=\top'$ pero
+  $\bigsqcup f(x_i)=\bigsqcup\{\bot',\bot',\dots\}=\bot'$. Distintos $\Rightarrow$
+  \textbf{no continua}.
+\end{itemize}
+$f$ es monótona pero ``se guarda la sorpresa para el final'': salta a $\top'$ recién
+en $\infty$. La continuidad prohíbe exactamente eso.
+\end{example}
+
+\subsection*{Conexiones y trampas}
+\begin{itemize}
+\item \textbf{$\bot$ = no-terminación / ``no sé nada''.} Análogo de la divergencia;
+  en Rust, el tipo \texttt{!} (never).
+\item \textbf{Información binaria en los planos.} En $\mathbb{Z}_\bot$ o $\Sigma_\bot$:
+  o no sabés nada ($\bot$) o lo sabés todo; no existe el ``entero a medio saber''.
+  Por eso no hay cadenas interesantes.
+\item \textbf{Las dos palancas de los intervalos.} Borde de arriba $\to$ predominio;
+  borde de abajo $\to$ mínimo. Independientes: $[0,1)$ tiene mínimo pero no es predominio.
+\item \textbf{Cómo chequear predominio.} No alcanza con que ``las que se me ocurren''
+  tengan límite: hay que \emph{cazar} la cadena que trepa hacia un borde excluido.
+\item \textbf{Todo poset finito es predominio} (no hay lugar para infinitos distintos);
+  solo falta ver si tiene $\bot$.
+\item \textbf{Continuidad $\approx$ computabilidad.} Una computación honesta solo mira
+  finito de su entrada: no puede ``detectar el infinito de un saque''. Por eso los
+  significados son funciones continuas.
+\end{itemize}
