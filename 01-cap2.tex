@@ -14,20 +14,23 @@ es el que obliga a inventar toda la maquinaria de dominios y punto fijo
 
 \subsection*{Sintaxis}
 \[
-\begin{array}{rcl}
-\langle\mathit{intexp}\rangle &::=& 0 \mid 1 \mid 2 \mid \cdots \mid \langle\mathit{var}\rangle
-   \mid -\langle\mathit{intexp}\rangle \mid \langle\mathit{intexp}\rangle + \langle\mathit{intexp}\rangle
-   \mid \cdots \mid \langle\mathit{intexp}\rangle \mathbin{\mathbf{rem}} \langle\mathit{intexp}\rangle \\[2pt]
-\langle\mathit{boolexp}\rangle &::=& \mathbf{true} \mid \mathbf{false}
+\begin{array}{r@{\;\;}c@{\;\;}l}
+\langle\mathit{intexp}\rangle &::=&
+   0 \mid 1 \mid 2 \mid \cdots \mid \langle\mathit{var}\rangle \mid -\langle\mathit{intexp}\rangle \\[1pt]
+&& \mid\ \langle\mathit{intexp}\rangle + \langle\mathit{intexp}\rangle \mid \cdots
+   \mid \langle\mathit{intexp}\rangle \mathbin{\mathbf{rem}} \langle\mathit{intexp}\rangle \\[4pt]
+\langle\mathit{boolexp}\rangle &::=&
+   \mathbf{true} \mid \mathbf{false}
    \mid \langle\mathit{intexp}\rangle = \langle\mathit{intexp}\rangle
-   \mid \langle\mathit{intexp}\rangle < \langle\mathit{intexp}\rangle \mid \cdots
-   \mid \neg\langle\mathit{boolexp}\rangle
-   \mid \langle\mathit{boolexp}\rangle \wedge \langle\mathit{boolexp}\rangle \mid \cdots \\[2pt]
-\langle\mathit{comm}\rangle &::=& \langle\mathit{var}\rangle := \langle\mathit{intexp}\rangle
+   \mid \langle\mathit{intexp}\rangle < \langle\mathit{intexp}\rangle \mid \cdots \\[1pt]
+&& \mid\ \neg\langle\mathit{boolexp}\rangle
+   \mid \langle\mathit{boolexp}\rangle \wedge \langle\mathit{boolexp}\rangle \mid \cdots \\[4pt]
+\langle\mathit{comm}\rangle &::=&
+   \langle\mathit{var}\rangle := \langle\mathit{intexp}\rangle
    \mid \mathbf{skip}
-   \mid \langle\mathit{comm}\rangle\,;\,\langle\mathit{comm}\rangle \\
-&& \mid\ \mathbf{if}\ \langle\mathit{boolexp}\rangle\ \mathbf{then}\ \langle\mathit{comm}\rangle\ \mathbf{else}\ \langle\mathit{comm}\rangle
-   \mid \mathbf{while}\ \langle\mathit{boolexp}\rangle\ \mathbf{do}\ \langle\mathit{comm}\rangle
+   \mid \langle\mathit{comm}\rangle\,;\,\langle\mathit{comm}\rangle \\[1pt]
+&& \mid\ \mathbf{if}\ \langle\mathit{boolexp}\rangle\ \mathbf{then}\ \langle\mathit{comm}\rangle\ \mathbf{else}\ \langle\mathit{comm}\rangle \\[1pt]
+&& \mid\ \mathbf{while}\ \langle\mathit{boolexp}\rangle\ \mathbf{do}\ \langle\mathit{comm}\rangle
 \end{array}
 \]
 Todas las variables son enteras (no hay variables booleanas).
@@ -69,7 +72,7 @@ Ecuaciones semánticas (dirigidas por la sintaxis):
 \semc{\mathbf{skip}}\,\sigma &= \sigma \\
 \semc{c_0\,;\,c_1}\,\sigma &= (\semc{c_1})_\bot\,(\semc{c_0}\,\sigma) \\
 \semc{\mathbf{if}\ b\ \mathbf{then}\ c_0\ \mathbf{else}\ c_1}\,\sigma
-   &= \mathbf{if}\ \semb{b}\,\sigma\ \mathbf{then}\ \semc{c_0}\,\sigma\ \mathbf{else}\ \semc{c_1}\,\sigma
+   &= \mathbf{if}\ \semb{b}\,\sigma\ \mathbf{then}\ \semc{c_0}\,\sigma\ \mathbf{else}\ \semc{c_1}\,\sigma.
 \end{align*}
 
 \subsection*{Ejemplo resuelto}
@@ -77,16 +80,21 @@ Ecuaciones semánticas (dirigidas por la sintaxis):
 \begin{aligned}
 \semc{x := x-1\,;\,y := y+x}\,\sigma
 &= (\semc{y := y+x})_\bot\,(\semc{x := x-1}\,\sigma) \\
-&= (\semc{y := y+x})_\bot\,[\sigma \mid x\colon \sigma x - 1]
-   \qquad (\neq \bot,\text{ así que aplica } \semc{y:=y+x}) \\
+&= (\semc{y := y+x})_\bot\,[\sigma \mid x\colon \sigma x - 1] \\
 &= [\,[\sigma \mid x\colon \sigma x - 1] \mid y\colon \sigma y + (\sigma x - 1)\,] \\
 &= [\sigma \mid x\colon \sigma x - 1 \mid y\colon \sigma y + \sigma x - 1].
 \end{aligned}
 \]
+En el segundo paso el estado intermedio $[\sigma \mid x\colon \sigma x - 1]$ es
+distinto de $\bot$, así que la extensión estricta efectivamente aplica
+$\semc{y := y+x}$.
 
 \subsection*{Conexiones y trampas}
 \textbf{El \texttt{while} no se puede definir así.} Desenrollando,
-$\mathbf{while}\ b\ \mathbf{do}\ c \equiv \mathbf{if}\ b\ \mathbf{then}\ (c\,;\,\mathbf{while}\ b\ \mathbf{do}\ c)\ \mathbf{else}\ \mathbf{skip}$,
+\[
+\mathbf{while}\ b\ \mathbf{do}\ c \ \equiv\
+\mathbf{if}\ b\ \mathbf{then}\ (c\,;\,\mathbf{while}\ b\ \mathbf{do}\ c)\ \mathbf{else}\ \mathbf{skip},
+\]
 de donde sale la \emph{ecuación de desenrollado}
 \[
 \semc{\mathbf{while}\ b\ \mathbf{do}\ c}\,\sigma
@@ -137,16 +145,17 @@ estructura (las aburridas, eventualmente constantes, contienen su límite trivia
 
 \begin{example}[¿Cadena? ¿Interesante? ¿Límite?]
 \begin{center}
-\begin{tabular}{l c c c}
-\hline
-sucesión & ¿cadena? & ¿interesante? & límite \\
-\hline
+\begin{tabular}{lccc}
+\toprule
+\rowcolor{accent!12}
+\textbf{sucesión} & \textbf{¿cadena?} & \textbf{¿interesante?} & \textbf{límite} \\
+\midrule
 $0 \sqsubseteq 1 \sqsubseteq 2 \sqsubseteq \cdots$ en $\mathbb{N}\cup\{\infty\}$ & sí & sí & $\infty$ \\
 $5 \sqsubseteq 5 \sqsubseteq \cdots$ & sí & no & $5$ \\
 $\bot \sqsubseteq \bot \sqsubseteq 7 \sqsubseteq 7 \sqsubseteq \cdots$ en $\mathbb{Z}_\bot$ & sí & no & $7$ \\
 $\{1\} \sqsubseteq \{1,2\} \sqsubseteq \cdots$ (por $\subseteq$) & sí & sí & $\{1,2,3,\dots\}$ \\
 $3 \sqsupseteq 2 \sqsupseteq 1$ (decreciente) & no & --- & --- \\
-\hline
+\bottomrule
 \end{tabular}
 \end{center}
 \end{example}
@@ -197,15 +206,16 @@ $\mathbb{Q}\cap[0,2]$ (la cadena $1.4 \sqsubseteq 1.41 \sqsubseteq \cdots$ apunt
 
 \begin{example}[Los intervalos: un punto cambia todo]
 \begin{center}
-\begin{tabular}{l c c c c}
-\hline
-conjunto & borde abajo & borde arriba & ¿predominio? & ¿dominio? \\
-\hline
+\begin{tabular}{lcccc}
+\toprule
+\rowcolor{accent!12}
+\textbf{conjunto} & \textbf{borde abajo} & \textbf{borde arriba} & \textbf{¿predominio?} & \textbf{¿dominio?} \\
+\midrule
 $[0,1]$ & cerrado & cerrado & sí & sí (mín $0$) \\
 $(0,1]$ & abierto & cerrado & sí & no (sin mín) \\
 $(0,1)$ & abierto & abierto & no & no \\
 $[0,1)$ & cerrado & abierto & no & no (¡aunque hay mín $0$!) \\
-\hline
+\bottomrule
 \end{tabular}
 \end{center}
 El borde de \emph{arriba} decide predominio; el de \emph{abajo}, si hay mínimo.
